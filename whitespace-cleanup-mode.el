@@ -139,9 +139,14 @@ Use '!' to signify that the buffer was not initially clean."
              (or (not whitespace-cleanup-mode-only-if-initially-clean)
                  whitespace-cleanup-mode-initially-clean))
     (let ((whitespace-action (or whitespace-action '(auto-cleanup)))
-          (col (current-column)))
+          (col (current-column))
+          (line-num (line-number-at-pos)))
       (whitespace-write-file-hook)
       (when whitespace-cleanup-mode-preserve-point
+        (let ((max-line (line-number-at-pos (point-max))))
+          (unless (<= line-num max-line)
+            (goto-char (point-max))
+            (insert (make-string (- line-num max-line) 10))))
         (move-to-column col t)
         (set-buffer-modified-p nil)))))
 
